@@ -1,5 +1,5 @@
 {
-  "name": "elide",
+  "name": "truncate",
   "dependencies": {
     "loader.js": "stefanpenner/loader.js#2.0.0"
   },
@@ -8,6 +8,6 @@
     "Tim Evans <tim.evans@paddle8.com>"
   ],
   "description": "Multiline ellipsis tools",
-  "main": "dist/elide.js",
+  "main": "dist/truncate.js",
   "license": "MIT"
 }

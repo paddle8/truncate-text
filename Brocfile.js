@@ -9,7 +9,7 @@ var lib = compileES6(mergeTrees(['lib', 'bower_components/loader.js']), {
     '**/*.js'
   ],
   wrapInEval: false,
-  outputFile: '/ellipsis.js'
+  outputFile: '/truncate.js'
 });
 
 var amd = compileES6('lib', {
@@ -17,7 +17,7 @@ var amd = compileES6('lib', {
     '**/*.js'
   ],
   wrapInEval: false,
-  outputFile: '/ellipsis.amd.js'
+  outputFile: '/truncate.amd.js'
 });
 
 var uglify = function (tree, filename) {
@@ -32,7 +32,7 @@ var uglify = function (tree, filename) {
 
 module.exports = mergeTrees([
   lib,
-  uglify(lib, 'ellipsis.js'),
+  uglify(lib, 'truncate.js'),
   amd,
-  uglify(amd, 'ellipsis.amd.js')
+  uglify(amd, 'truncate.amd.js')
 ]);
