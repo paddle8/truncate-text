@@ -39,7 +39,7 @@ module.exports = function (grunt) {
       grunt.log.write("Fetched LineBreak.txt\n");
       grunt.log.write("Parsing code points\n");
       var lines = this.body.split('\n');
-      var softWrapOpportunities = regenerate(0x0020, 0x0009); // Spaces and Tabs
+      var softWrapOpportunities = regenerate(0x0020, 0x0009, 0x002D); // Spaces, Tabs, and Hyphens
       var Line_Break = {
         CJ: regenerate(),
         IN: regenerate(),

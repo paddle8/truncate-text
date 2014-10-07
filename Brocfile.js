@@ -7,7 +7,7 @@ var pickFiles = require('broccoli-static-compiler');
 
 var lib = compileES6(mergeTrees(['lib', 'bower_components/loader.js']), {
   loaderFile: 'loader.js',
-  ignoredModules: ['dom-ruler/layout', 'dom-ruler/text'],
+  ignoredModules: ['dom-ruler/layout', 'dom-ruler/text', 'dom-ruler/utils'],
   inputFiles: [
     '**/*.js'
   ],
@@ -19,7 +19,7 @@ var amd = compileES6('lib', {
   inputFiles: [
     '**/*.js'
   ],
-  ignoredModules: ['dom-ruler/layout', 'dom-ruler/text'],
+  ignoredModules: ['dom-ruler/layout', 'dom-ruler/text', 'dom-ruler/utils'],
   wrapInEval: false,
   outputFile: '/truncate.amd.js'
 });
