@@ -789,9 +789,8 @@ define("truncate",
         lineBreak: 'normal'
       }, options);
 
-      var contentWidth = layoutOf(options.block).content.width;
-
-      var width = layoutOf(options.block).content.width;
+      var layout = layoutOf(options.block);
+      var width = layout.content.width;
       var metrics = words(fragment.innerHTML, merge({ width: width, template: fragment }, options));
       var lines = metrics.lines;
 
@@ -802,7 +801,7 @@ define("truncate",
       var fragmentHTML = fragment.outerHTML;
       blockHTML = blockHTML.slice(blockHTML.indexOf(fragmentHTML) + fragmentHTML.length);
 
-      var blockLines = words(blockHTML, merge({ width: width, template: options.block }, options));
+      var blockLines = words(blockHTML, merge({ width: layout.width, template: options.block }, options));
       var firstLine = blockLines.lines[0];
       var lastBlockToken = firstLine[firstLine.length - 1];
       var blockWidth = lastBlockToken.width + lastBlockToken.left;
@@ -819,11 +818,11 @@ define("truncate",
         var lastToken = line[line.length - 1];
 
         // Check to see if a full fragment needs to be truncated
-        if (lastToken.left + lastToken.width + blockWidth <= contentWidth && options.lines === lines.length) {
+        if (lastToken.left + lastToken.width + blockWidth <= width && options.lines === lines.length) {
           return;
         }
 
-        while (lastToken.left + lastToken.width + ellipsisWidth + blockWidth > contentWidth) {
+        while (lastToken.left + lastToken.width + ellipsisWidth + blockWidth > width) {
           tokens.pop();
           line.pop();
           lastToken = line[line.length - 1];
@@ -926,6 +925,7 @@ define("truncate",
       measureText(html.join(''), false);
 
       var lines = [];
+      var parentLayout = layoutOf(element).padding;
       var words = element.getElementsByTagName('span');
       var layout;
       var word;
@@ -936,8 +936,8 @@ define("truncate",
         word = words[i];
         layout = layoutOf(word);
         word = {
-          top: word.offsetTop,
-          left: word.offsetLeft,
+          top: word.offsetTop - parentLayout.top,
+          left: word.offsetLeft - parentLayout.left,
           width: layout.width,
           height: layout.height
         };
@@ -952,7 +952,7 @@ define("truncate",
       }
 
       if (line.length) {
-        lines.push(line);    
+        lines.push(line);
       }
 
       // Teardown the test element
