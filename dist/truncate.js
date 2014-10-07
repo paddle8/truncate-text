@@ -324,10 +324,13 @@ var define, requireModule, require, requirejs;
       var fragmentHTML = fragment.outerHTML;
       blockHTML = blockHTML.slice(blockHTML.indexOf(fragmentHTML) + fragmentHTML.length);
 
-      var blockLines = words(blockHTML, merge({ width: layout.width, template: options.block }, options));
-      var firstLine = blockLines.lines[0];
-      var lastBlockToken = firstLine[firstLine.length - 1];
-      var blockWidth = lastBlockToken.width + lastBlockToken.left;
+      var blockWidth = 0;
+      if (blockHTML) {
+        var blockLines = words(blockHTML, merge({ width: layout.width, template: options.block }, options));
+        var firstLine = blockLines.lines[0];
+        var lastBlockToken = firstLine[firstLine.length - 1];
+        blockWidth = lastBlockToken.width + lastBlockToken.left;
+      }
 
       if (lines.length >= options.lines) {
         var noTokens = 0;
