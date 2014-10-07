@@ -15,18 +15,6 @@ var lib = compileES6(mergeTrees(['lib', 'bower_components/loader.js']), {
   outputFile: '/truncate.js'
 });
 
-var vendor = pickFiles('bower_components/dom-ruler/dist', {
-  srcDir: '/',
-  files: ['dom-ruler.amd.js'],
-  destDir: '/'
-});
-
-var standalone = concat(mergeTrees([lib, vendor]), {
-  inputFiles: ['**/*.js'],
-  outputFile: '/truncate.all.js',
-  wrapInEval: false
-});
-
 var amd = compileES6('lib', {
   inputFiles: [
     '**/*.js'
@@ -36,7 +24,25 @@ var amd = compileES6('lib', {
   outputFile: '/truncate.amd.js'
 });
 
-var standaloneAmd = concat(mergeTrees([amd, vendor]), {
+var vendorAmd = pickFiles('bower_components/dom-ruler/dist', {
+  srcDir: '/',
+  files: ['dom-ruler.amd.js'],
+  destDir: '/'
+});
+
+var vendor = pickFiles('bower_components/dom-ruler/dist', {
+  srcDir: '/',
+  files: ['dom-ruler.js'],
+  destDir: '/'
+});
+
+var standalone = concat(mergeTrees([amd, vendor]), {
+  inputFiles: ['**/*.js'],
+  outputFile: '/truncate.all.js',
+  wrapInEval: false
+});
+
+var standaloneAmd = concat(mergeTrees([amd, vendorAmd]), {
   inputFiles: ['**/*.js'],
   outputFile: '/truncate.all.amd.js',
   wrapInEval: false

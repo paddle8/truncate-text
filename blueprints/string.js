@@ -5,6 +5,14 @@ var CJK_NORMAL_BREAK_RE = /{{CJK_NORMAL}}/;
 var LOOSE_BREAK_RE = /{{LOOSE}}/;
 var CJK_LOOSE_BREAK_RE = /{{CJK_LOOSE}}/;
 
+var trim = function (string) {
+  if (typeof String.prototype.trim !== 'function') {
+    return string.replace(/^\s+|\s+$/g, '');
+  } else {
+    return string.trim();
+  }
+};
+
 var split = function (string, options) {
   var isChinese = options.lang === 'zh';
   var isJapanese = options.lang === 'ja';
@@ -29,6 +37,7 @@ var split = function (string, options) {
     break;
   }
 
+  string = trim(string);
   var tokens = [];
   while (string.length) {
     var index = string.search(regex);
@@ -45,5 +54,6 @@ var split = function (string, options) {
 }
 
 export {
-  split
+  split,
+  trim
 };

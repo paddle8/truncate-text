@@ -26,13 +26,17 @@
 <body lang="en">
   <button name="test" onclick="test()">Test</button>
 
-  <p id="test1">
-    <span class="italic">Hello<br>World<br>How<br>are<br>you<br>doing?</span>
+  <p id="test1" style="width: 200px">
+    Bacon ipsum dolor sit amet laborum est reprehenderit, minim eu eiusmod ea t-bone. Frankfurter tri-tip incididunt irure, nostrud dolore proident boudin qui eu. Eiusmod capicola quis, laboris venison kielbasa tenderloin meatball. Dolore sunt strip steak dolor, turkey id kielbasa bacon occaecat pig enim doner. Dolor short loin magna pork chop.
   </p>
 
-  <script src="../../metrics/dist/metrics.js"></script>
-  <script src="../dist/ellipsis.amd.js"></script>
+  <script src="../dist/truncate.all.js"></script>
   <script>
+    var truncate = require('truncate/truncate').truncate;
+    function test() {
+      var el = document.getElementById('test1');
+      truncate(el, { lines: 2 });
+    }
   </script>
 </body>
 </html>
