@@ -1,7 +1,8 @@
 {
   "name": "truncate",
   "dependencies": {
-    "loader.js": "stefanpenner/loader.js#2.0.0"
+    "loader.js": "stefanpenner/loader.js#2.0.0",
+    "dom-ruler": "paddle8/dom-ruler"
   },
   "version": "0.0.0",
   "authors": [
