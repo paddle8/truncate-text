@@ -1,5 +1,5 @@
 {
-  "name": "truncate",
+  "name": "truncate-text",
   "dependencies": {
     "loader.js": "stefanpenner/loader.js#2.0.0",
     "dom-ruler": "paddle8/dom-ruler"
@@ -9,6 +9,6 @@
     "Tim Evans <tim.evans@paddle8.com>"
   ],
   "description": "Multiline ellipsis tools",
-  "main": "dist/truncate.js",
+  "main": "dist/truncate-text.all.js",
   "license": "MIT"
 }
