@@ -1,19 +1,13 @@
 {{HEADER}}
+import { trim } from "./utils";
+
 var STRICT_BREAK_RE = /{{STRICT}}/;
 var NORMAL_BREAK_RE = /{{NORMAL}}/;
 var CJK_NORMAL_BREAK_RE = /{{CJK_NORMAL}}/;
 var LOOSE_BREAK_RE = /{{LOOSE}}/;
 var CJK_LOOSE_BREAK_RE = /{{CJK_LOOSE}}/;
 
-var trim = function (string) {
-  if (typeof String.prototype.trim !== 'function') {
-    return string.replace(/^\s+|\s+$/g, '');
-  } else {
-    return string.trim();
-  }
-};
-
-var split = function (string, options) {
+var splitOnSoftWrapOpportunities = function (string, options) {
   var isChinese = options.lang === 'zh';
   var isJapanese = options.lang === 'ja';
   var regex;
@@ -54,6 +48,5 @@ var split = function (string, options) {
 }
 
 export {
-  split,
-  trim
+  splitOnSoftWrapOpportunities
 };

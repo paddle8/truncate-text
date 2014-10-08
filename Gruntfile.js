@@ -112,14 +112,14 @@ module.exports = function (grunt) {
 
 
       grunt.log.write("Parsed code points");
-      fs.readFile('./blueprints/string.js', function (err, data) {
-        fs.writeFile("./lib/truncate/string.js", data.toString()
-                                                     .replace("{{HEADER}}", header.join('\n'))
-                                                     .replace("{{STRICT}}", softWrapOpportunities.toString())
-                                                     .replace("{{NORMAL}}", normalBreak.toString())
-                                                     .replace("{{CJK_NORMAL}}", cjkNormalBreak.toString())
-                                                     .replace("{{LOOSE}}", looseBreak.toString())
-                                                     .replace("{{CJK_LOOSE}}", cjkLooseBreak.toString()));
+      fs.readFile('./blueprints/css.js', function (err, data) {
+        fs.writeFile("./lib/truncate/css.js", data.toString()
+                                                  .replace("{{HEADER}}", header.join('\n'))
+                                                  .replace("{{STRICT}}", softWrapOpportunities.toString())
+                                                  .replace("{{NORMAL}}", normalBreak.toString())
+                                                  .replace("{{CJK_NORMAL}}", cjkNormalBreak.toString())
+                                                  .replace("{{LOOSE}}", looseBreak.toString())
+                                                  .replace("{{CJK_LOOSE}}", cjkLooseBreak.toString()));
         done();
       });
     });

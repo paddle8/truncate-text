@@ -148,7 +148,7 @@ var define, requireModule, require, requirejs;
   ["dom-ruler/styles","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
-    var pluckStyles = __dependency1__.pluckStyles;
+    var getStyles = __dependency1__.getStyles;
     var detectBoxSizing = __dependency1__.detectBoxSizing;
 
     /**
@@ -161,7 +161,7 @@ var define, requireModule, require, requirejs;
       return margin;
     };
 
-    var windowLayout = function (window) {
+    var getWindowLayout = function (window) {
       var width = window.innerWidth;
       var height = window.innerHeight;
 
@@ -179,7 +179,7 @@ var define, requireModule, require, requirejs;
       };
     };
 
-    var documentLayout = function (document) {
+    var getDocumentLayout = function (document) {
       var width = Math.max(
         document.body.scrollWidth, document.documentElement.scrollWidth,
         document.body.offsetWidth, document.documentElement.offsetWidth,
@@ -206,17 +206,17 @@ var define, requireModule, require, requirejs;
       Computes the layout of an element that matches
       the inspector properties of the DOM element.
      */
-    function layoutOf(element) {
+    function getLayout(element) {
       // Handle window
       if ((window.Window && element instanceof Window) || // Standards
           element === window) {                           // Safari 5.1
-        return windowLayout(element);
+        return getWindowLayout(element);
       }
 
       // Handle document
       if ((window.Document && element instanceof Document) || // Standards
           element === document) {                             // old IE
-        return documentLayout(element);
+        return getDocumentLayout(element);
       }
 
       var boxSizing = detectBoxSizing(element);
@@ -224,7 +224,7 @@ var define, requireModule, require, requirejs;
         width:  element.offsetWidth,
         height: element.offsetHeight
       };
-      var styles = pluckStyles(element);
+      var styles = getStyles(element);
       var layout = {
         width:     null,
         height:    null,
@@ -307,8 +307,7 @@ var define, requireModule, require, requirejs;
       return layout;
     }
 
-    var layout = layoutOf;
-    __exports__.layout = layout;
+    __exports__.getLayout = getLayout;
   });
 ;define("dom-ruler/styles", 
   ["dom-ruler/utils","exports"],
@@ -357,7 +356,7 @@ var define, requireModule, require, requirejs;
     var DEFAULT_BOX_SIZING;
 
     // Retrieve the computed style of the element
-    var pluckStyles = function (element) {
+    var getStyles = function (element) {
       if (document.defaultView && document.defaultView.getComputedStyle) {
         return document.defaultView.getComputedStyle(element, null);
       }
@@ -365,7 +364,7 @@ var define, requireModule, require, requirejs;
     };
 
     var copyStyles = function (element, targetElement) {
-      var styles = pluck(pluckStyles(element), LAYOUT_STYLES);
+      var styles = pluck(getStyles(element), LAYOUT_STYLES);
       merge(targetElement.style, styles);
     };
 
@@ -407,7 +406,7 @@ var define, requireModule, require, requirejs;
         DEFAULT_BOX_SIZING = detectDefaultBoxSizing();
       }
 
-      var styles = pluckStyles(element);
+      var styles = getStyles(element);
       return styles.boxSizing       ||
              styles.webkitBoxSizing ||
              styles.MozBoxSizing    ||
@@ -417,7 +416,7 @@ var define, requireModule, require, requirejs;
     };
 
 
-    __exports__.pluckStyles = pluckStyles;
+    __exports__.getStyles = getStyles;
     __exports__.copyStyles = copyStyles;
     __exports__.detectBoxSizing = detectBoxSizing;
   });
@@ -490,10 +489,10 @@ var define, requireModule, require, requirejs;
   ["dom-ruler/styles","dom-ruler/utils","dom-ruler/layout","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
-    var pluckStyles = __dependency1__.pluckStyles;
+    var getStyles = __dependency1__.getStyles;
     var copyStyles = __dependency1__.copyStyles;
     var merge = __dependency2__.merge;
-    var layout = __dependency3__.layout;
+    var getLayout = __dependency3__.getLayout;
 
     var metricsCalculationElement = null;
 
@@ -516,7 +515,7 @@ var define, requireModule, require, requirejs;
         document.body.insertBefore(parent, null);
       }
 
-      var styles = pluckStyles(exampleElement);
+      var styles = getStyles(exampleElement);
       copyStyles(exampleElement, element);
 
       // Explicitly set the `font` property for Mozilla
@@ -562,7 +561,7 @@ var define, requireModule, require, requirejs;
       }
     }
 
-    function measureText(string, escape) {
+    function setText(string, escape) {
       var element = metricsCalculationElement;
       if (!escape) {
         element.innerHTML = string;
@@ -579,8 +578,6 @@ var define, requireModule, require, requirejs;
       // Webkit / Blink needs this to trigger a reflow
       element.style.overflow = 'visible';
       element.style.overflow = 'hidden';
-
-      return layout(element);
     }
 
     /**
@@ -591,7 +588,7 @@ var define, requireModule, require, requirejs;
       @param options {Object} A hash of values (whether to escape the value or not)
       @return {Object} The layout of the string passed in.
      */
-    function measure(string, styles, options) {
+    function measureText(string, styles, options) {
       if (options == null) {
         options = styles;
         styles = {};
@@ -605,10 +602,12 @@ var define, requireModule, require, requirejs;
       prepareTextMeasurement(options.template, styles);
 
       var element = metricsCalculationElement;
-      var metrics = measureText(string, options.escape);
+      setText(string, options.escape);
+      var metrics = getLayout(element);
 
-      var fontSize = parseInt(pluckStyles(element).fontSize, 10);
-      var adjustment = fontSize - measureText("1", false).content.height;
+      var fontSize = parseInt(getStyles(element).fontSize, 10);
+      setText("1", false);
+      var adjustment = fontSize - getLayout(element).content.height;
       metrics.height += adjustment;
 
       teardownTextMeasurement();
@@ -617,9 +616,9 @@ var define, requireModule, require, requirejs;
     }
 
     __exports__.prepareTextMeasurement = prepareTextMeasurement;
-    __exports__.measureText = measureText;
+    __exports__.setText = setText;
     __exports__.teardownTextMeasurement = teardownTextMeasurement;
-    __exports__.measure = measure;
+    __exports__.measureText = measureText;
   });
 ;define("loader", 
   [],
@@ -772,15 +771,15 @@ var define, requireModule, require, requirejs;
     })();
   });
 define("truncate", 
-  ["truncate/string","truncate/words","dom-ruler/text","dom-ruler/utils","dom-ruler/layout","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
+  ["truncate/css","truncate/utils","truncate/words","dom-ruler/text","dom-ruler/utils","dom-ruler/layout","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
     "use strict";
-    var split = __dependency1__.split;
-    var trim = __dependency1__.trim;
-    var words = __dependency2__.words;
-    var measure = __dependency3__.measure;
-    var merge = __dependency4__.merge;
-    var layoutOf = __dependency5__.layout;
+    var splitOnSoftWrapOpportunities = __dependency1__.splitOnSoftWrapOpportunities;
+    var trim = __dependency2__.trim;
+    var getWordMetrics = __dependency3__.getWordMetrics;
+    var measureText = __dependency4__.measureText;
+    var merge = __dependency5__.merge;
+    var getLayout = __dependency6__.getLayout;
 
     var truncate = function (fragment, options) {
       options = merge({
@@ -789,13 +788,13 @@ define("truncate",
         lineBreak: 'normal'
       }, options);
 
-      var layout = layoutOf(options.block);
+      var layout = getLayout(options.block);
       var width = layout.content.width;
-      var metrics = words(fragment.innerHTML, merge({ width: width, template: fragment }, options));
+      var metrics = getWordMetrics(fragment.innerHTML, merge({ width: width, template: fragment }, options));
       var lines = metrics.lines;
 
       // Compute the size of the ellipsis
-      var ellipsisWidth = measure(options.ellipsis, { template: fragment, escape: false }).width;
+      var ellipsisWidth = measureText(options.ellipsis, { template: fragment, escape: false }).width;
 
       var blockHTML = options.block.innerHTML;
       var fragmentHTML = fragment.outerHTML;
@@ -803,7 +802,7 @@ define("truncate",
 
       var blockWidth = 0;
       if (blockHTML) {
-        var blockLines = words(blockHTML, merge({ width: layout.width, template: options.block }, options));
+        var blockLines = getWordMetrics(blockHTML, merge({ width: layout.width, template: options.block }, options));
         var firstLine = blockLines.lines[0];
         var lastBlockToken = firstLine[firstLine.length - 1];
         blockWidth = lastBlockToken.width + lastBlockToken.left;
@@ -840,27 +839,21 @@ define("truncate",
     var truncate = truncate;
     __exports__.truncate = truncate;
   });
-;define("truncate/string", 
-  ["exports"],
-  function(__exports__) {
+;define("truncate/css", 
+  ["truncate/utils","exports"],
+  function(__dependency1__, __exports__) {
     "use strict";
     // LineBreak-7.0.0.txt
     // Date: 2014-02-28, 23:15:00 GMT [KW, LI]
+    var trim = __dependency1__.trim;
+
     var STRICT_BREAK_RE = /[\t \-\xA0\u034F\u035C-\u0362\u0F08\u0F0C\u0F12\u0FD9\u0FDA\u180E\u2007\u200B\u2011\u202F\u2060\uFEFF]/;
     var NORMAL_BREAK_RE = /[\t \-\xA0\u034F\u035C-\u0362\u0F08\u0F0C\u0F12\u0FD9\u0FDA\u180E\u2007\u200B\u2011\u202F\u2060\u3041\u3043\u3045\u3047\u3049\u3063\u3083\u3085\u3087\u308E\u3095\u3096\u30A1\u30A3\u30A5\u30A7\u30A9\u30C3\u30E3\u30E5\u30E7\u30EE\u30F5\u30F6\u30FC\u31F0-\u31FF\uFEFF\uFF67-\uFF70]/;
     var CJK_NORMAL_BREAK_RE = /[\t \-\xA0\u034F\u035C-\u0362\u0F08\u0F0C\u0F12\u0FD9\u0FDA\u180E\u2007\u200B\u2010\u2011\u2013\u202F\u2060\u301C\u3041\u3043\u3045\u3047\u3049\u3063\u3083\u3085\u3087\u308E\u3095\u3096\u30A0\u30A1\u30A3\u30A5\u30A7\u30A9\u30C3\u30E3\u30E5\u30E7\u30EE\u30F5\u30F6\u30FC\u31F0-\u31FF\uFEFF\uFF67-\uFF70]/;
     var LOOSE_BREAK_RE = /[\t \-\xA0\u034F\u035C-\u0362\u0F08\u0F0C\u0F12\u0FD9\u0FDA\u180E\u2007\u200B\u2011\u202F\u2060\u3005\u303B\u3041\u3043\u3045\u3047\u3049\u3063\u3083\u3085\u3087\u308E\u3095\u3096\u309D\u309E\u30A1\u30A3\u30A5\u30A7\u30A9\u30C3\u30E3\u30E5\u30E7\u30EE\u30F5\u30F6\u30FC-\u30FE\u31F0-\u31FF\uFEFF\uFF67-\uFF70]/;
     var CJK_LOOSE_BREAK_RE = /[\t !%\-:;\?\xA0\xA2\xB0\u034F\u035C-\u0362\u0F08\u0F0C\u0F12\u0FD9\u0FDA\u180E\u2007\u200B\u2010\u2011\u2013\u202F\u2030\u2032\u2033\u203C\u2047-\u2049\u2060\u2103\u2116\u3005\u301C\u303B\u3041\u3043\u3045\u3047\u3049\u3063\u3083\u3085\u3087\u308E\u3095\u3096\u309D\u309E\u30A0\u30A1\u30A3\u30A5\u30A7\u30A9\u30C3\u30E3\u30E5\u30E7\u30EE\u30F5\u30F6\u30FB-\u30FE\u31F0-\u31FF\uFEFF\uFF01\uFF05\uFF1A\uFF1B\uFF1F\uFF65\uFF67-\uFF70\uFFE0]/;
 
-    var trim = function (string) {
-      if (typeof String.prototype.trim !== 'function') {
-        return string.replace(/^\s+|\s+$/g, '');
-      } else {
-        return string.trim();
-      }
-    };
-
-    var split = function (string, options) {
+    var splitOnSoftWrapOpportunities = function (string, options) {
       var isChinese = options.lang === 'zh';
       var isJapanese = options.lang === 'ja';
       var regex;
@@ -900,22 +893,35 @@ define("truncate",
       return tokens;
     }
 
-    __exports__.split = split;
+    __exports__.splitOnSoftWrapOpportunities = splitOnSoftWrapOpportunities;
+  });
+;define("truncate/utils", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    var trim = function (string) {
+      if (typeof String.prototype.trim !== 'function') {
+        return string.replace(/^\s+|\s+$/g, '');
+      } else {
+        return string.trim();
+      }
+    };
+
     __exports__.trim = trim;
   });
 ;define("truncate/words", 
-  ["truncate/string","dom-ruler/text","dom-ruler/layout","exports"],
+  ["truncate/css","dom-ruler/text","dom-ruler/layout","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
-    var split = __dependency1__.split;
+    var splitOnSoftWrapOpportunities = __dependency1__.splitOnSoftWrapOpportunities;
     var prepareTextMeasurement = __dependency2__.prepareTextMeasurement;
-    var measureText = __dependency2__.measureText;
+    var setText = __dependency2__.setText;
     var teardownTextMeasurement = __dependency2__.teardownTextMeasurement;
-    var layoutOf = __dependency3__.layout;
+    var getLayout = __dependency3__.getLayout;
 
-    function words (string, options) {
+    function getWordMetrics (string, options) {
       // Split the text where the line may break
-      var text = split(string, { lineBreak: options.lineBreak, lang: options.lang });
+      var text = splitOnSoftWrapOpportunities(string, { lineBreak: options.lineBreak, lang: options.lang });
       var html = [];
       for (var i = 0, len = text.length; i < len; i++) {
         html[i] = '<span>' + text[i] + '</span>';
@@ -925,10 +931,10 @@ define("truncate",
       var element = prepareTextMeasurement(options.template, { width: options.width + 'px' });
 
       // Compute the location of each <span>, resulting in line metrics
-      measureText(html.join(''), false);
+      setText(html.join(''), false);
 
       var lines = [];
-      var parentLayout = layoutOf(element).padding;
+      var parentLayout = getLayout(element).padding;
       var words = element.getElementsByTagName('span');
       var layout;
       var word;
@@ -937,7 +943,7 @@ define("truncate",
 
       for (i = 0, len = words.length; i < len; i++) {
         word = words[i];
-        layout = layoutOf(word);
+        layout = getLayout(word);
         word = {
           top: word.offsetTop - parentLayout.top,
           left: word.offsetLeft - parentLayout.left,
@@ -967,5 +973,5 @@ define("truncate",
       };
     };
 
-    __exports__.words = words;
+    __exports__.getWordMetrics = getWordMetrics;
   });
