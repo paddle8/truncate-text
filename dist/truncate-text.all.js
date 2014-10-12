@@ -144,6 +144,18 @@ var define, requireModule, require, requirejs;
   };
 })();
 
+;define("dom-ruler", 
+  ["dom-ruler/layout","dom-ruler/text","dom-ruler/styles","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
+    "use strict";
+    var getLayout = __dependency1__.getLayout;
+    var measureText = __dependency2__.measureText;
+    var getStyles = __dependency3__.getStyles;
+
+    __exports__.getLayout = getLayout;
+    __exports__.measureText = measureText;
+    __exports__.getStyles = getStyles;
+  });
 ;define("dom-ruler/layout", 
   ["dom-ruler/styles","exports"],
   function(__dependency1__, __exports__) {
@@ -771,15 +783,15 @@ var define, requireModule, require, requirejs;
     })();
   });
 define("truncate-text", 
-  ["truncate-text/css","truncate-text/utils","truncate-text/words","dom-ruler/text","dom-ruler/utils","dom-ruler/layout","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
+  ["truncate-text/css","truncate-text/utils","truncate-text/words","dom-ruler/utils","dom-ruler","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
     "use strict";
     var splitOnSoftWrapOpportunities = __dependency1__.splitOnSoftWrapOpportunities;
     var trim = __dependency2__.trim;
     var getWordMetrics = __dependency3__.getWordMetrics;
-    var measureText = __dependency4__.measureText;
-    var merge = __dependency5__.merge;
-    var getLayout = __dependency6__.getLayout;
+    var merge = __dependency4__.merge;
+    var getLayout = __dependency5__.getLayout;
+    var measureText = __dependency5__.measureText;
 
     var truncate = function (fragment, options) {
       options = merge({
@@ -910,7 +922,7 @@ define("truncate-text",
     __exports__.trim = trim;
   });
 ;define("truncate-text/words", 
-  ["truncate-text/css","dom-ruler/text","dom-ruler/layout","exports"],
+  ["truncate-text/css","dom-ruler/text","dom-ruler","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
     var splitOnSoftWrapOpportunities = __dependency1__.splitOnSoftWrapOpportunities;
